@@ -1,0 +1,4 @@
+cylinder/
+.build/
+*.exe
+*.pdb
