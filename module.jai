@@ -1,9 +1,6 @@
 #load "3mf.jai";
-
-#scope_module
-
-
-parser :: struct {
+MFFP_parser :: struct {
+    triangle_data:[] u32; // INDICES
     vertex_data:[] float;
     ptype :: enum u8 {
         P_3MF :: 0;
@@ -13,3 +10,5 @@ parser :: struct {
     type:ptype;
 
 }
+
+

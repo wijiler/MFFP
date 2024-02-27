@@ -1,6 +1,6 @@
 main :: () {
-    l3mf := parse_3mf_as_vertex_data("assets/cylinder.3mf");
-    print("%\n",l3mf.vertex_data);
+    l3mf := parse_3mf("assets/box.3mf");
+    print("%\n",l3mf);
 }
 
 
