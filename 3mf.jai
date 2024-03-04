@@ -1,4 +1,4 @@
-parse_3mf :: (filename:string) -> MFFP_parser {
+parse_3mf :: (filename:string) -> x3mp {
     p:x3mp;
 
     verts:[..] float;

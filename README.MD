@@ -4,9 +4,8 @@
 
 ## Planned support
 
-- [x] .3mf
+- [x] .3mf (dont fucking use this file format, it is actually so bad)
 - [ ] .stp/.step
-- [ ] .3dm, may drop
 - [ ] .stl
 - [ ] .jsktch
 
@@ -23,6 +22,11 @@ Because all dependency's are locally installed in this repo you do not need to h
 git clone --recursive https://github.com/wijiler/MFFP.git
 ```
 
-However I should give authors of all dependencies credit for making my project work  
+## Modular
+
+each file parser is its own useable module, allowing you to seperate only what you need
+
+However I should give authors of all dependencies and resources used to figure out certain file standards by myself (EX. STEP) credit for making my project work  
 [tm-zip](https://github.com/Lunatoid/tm_zip)  
-[jxml](https://github.com/smari/jai-xml)
+[jxml](https://github.com/smari/jai-xml)  
+[step-tools](https://www.steptools.com/docs/stpfiles/ap214/index.html)
