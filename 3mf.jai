@@ -109,6 +109,6 @@ x3mp :: struct {
     //triangle_data:[] u64;
 }
 #scope_file
-#load "deps/xml/module.jai";
-#load "deps/zip/module.jai";
+#load "./deps/xml/module.jai";
+#load "./deps/zip/module.jai";
 #import "Basic";

@@ -27,15 +27,9 @@ Curve2d :: (points: .. curvePoint2d) -> [] Vector2 {
     degree := 3;
     vecs:[..] Vector2;
     fill_knots(*knots);
-    //TODO: Delete this
+
     for point:points {
-        basis := deboors(knots.count + 2, degree,it_index,knots[it_index],knots,point.pos);
-
-        lpoint :=  (basis * point.weight * point.pos) / ( basis * point.weight);
-        ifx lpoint.x == 0/1 then lpoint.x = 0;
-        ifx lpoint.y == 0/1 then lpoint.y = 0;
-        array_add(*vecs,lpoint);
-
+	    array_add(*vecs,lpoint); // TODO: update code, this is unneeded ex. vecs = ..points;
     }
 
 
