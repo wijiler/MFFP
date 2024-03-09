@@ -29,7 +29,7 @@ Curve2d :: (points: .. curvePoint2d) -> [] Vector2 {
     fill_knots(*knots);
 
     for point:points {
-	    array_add(*vecs,lpoint); // TODO: update code, this is unneeded ex. vecs = ..points;
+	    array_add(*vecs,point.pos); // TODO: update code, this is unneeded ex. vecs = ..points;
     }
 
 
