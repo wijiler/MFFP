@@ -21,49 +21,94 @@
 //     return vecs;
 // }
 
-Curve2d :: (points: .. curvePoint2d) -> [] Vector2 {
+Curve2d :: (knots: [] float,points: .. curvePoint2d) -> [] Vector2 {
     assert(points.count >= 2,"Too little nurbs controlpoints");
-    knots: [] float = NewArray(points.count + 3 + 1,float);
+
     degree := 3;
     vecs:[..] Vector2;
-    fill_knots(*knots);
-
-    for point:points {
-	    array_add(*vecs,point.pos); // TODO: update code, this is unneeded ex. vecs = ..points;
-    }
 
 
-    first := vecs[0];
-    last := vecs[vecs.count - 1];
+    first := points[0].pos;
+    last := points[points.count - 1].pos;
     step := (last - first) / Resolution;
-    i: int = 0;
     for 0..Resolution - 1 {
         cstep := (step * cast(float)it);
         line := first + cstep;
-        basis := deboors(Resolution, degree,i,points[i].weight,knots,line);
-        print("%\n",basis);
-        // NURBS curve function
-        line *= abs((((basis * points[i].weight * points[i].pos) /  (basis * points[i].weight)) - basis * line));
-        i += 1;
+        i: int = 0;
+        closest := points[0].pos;
 
-        ifx i > points.count - 2 then i = 1;
+        for point:points {
+            if abs(closest.x - line.x) > abs(point.pos.x - line.x) || abs(closest.y - line.y) > abs(point.pos.y - line.y) && it_index != 0 && it_index != points.count - 1 {
+                 closest = point.pos;
+                 i = it_index;
+            }
+        }
+    
+        basis := deboors(Resolution, degree,i,points[i].weight,knots,line);
+        print("%\n",points[i].pos);
+        // NURBS curve function
+        line *= ((((basis * points[i].weight * points[i].pos) /  (basis * points[i].weight)) - basis * line));
+        // remove NAN
         ifx line.x == 0/1 then line.x = 0;
         ifx line.y == 0/1 then line.y = 0;
-        line.x = clamp(line.x, first.x,last.x);
-        line.y = clamp(line.y,first.y,last.y) ;
-        // remove artifacts from clamping
+        // make sure shit dont go crazy
         if abs(line.y) >= abs(last.y) && abs(line.x) != abs(last.x) || abs(line.x) >= abs(last.x) && abs(line.y) != abs(last.y) then continue; else array_add(*vecs,line);
-        
     }
+    
+
 
     return vecs;
 }
 
+Curve3d :: (knots: [] float,points: .. curvePoint3d) -> [] Vector4 {
+    assert(points.count >= 2,"Too little nurbs controlpoints");
 
+    degree := 3;
+    vecs:[..] Vector4;
+
+
+    first := points[0].pos;
+    last := points[points.count - 1].pos;
+    step := (last - first) / Resolution;
+    for 0..Resolution - 1 {
+        cstep := (step * cast(float)it);
+        line := first + cstep;
+        i: int = 0;
+        closest := points[1].pos;
+
+        for point:points {
+            if it_index == 0 || it_index == points.count - 1 then it_index += 1;
+            if abs(closest.x - line.x) > abs(point.pos.x - line.x) || abs(closest.y - line.y) > abs(point.pos.y - line.y) {
+                 closest = point.pos;
+                 i = clamp(it_index,1,points.count - 2);
+            }
+        }
+    
+        basis := deboors(Resolution, degree,i,points[i].weight,knots,line);
+        print("%\n",points[i].pos);
+        // NURBS curve function
+        line *= ((((basis * points[i].weight * points[i].pos) /  (basis * points[i].weight)) - basis * line));
+        // remove NAN
+        ifx line.x == 0/1 then line.x = 0;
+        ifx line.y == 0/1 then line.y = 0;
+        ifx line.z == 0/1 then line.z = 0;
+        ifx line.w == 0/1 then line.w = 0;
+        // make sure shit dont go crazy
+        if abs(line.y) >= abs(last.y) && abs(line.x) != abs(last.x) || abs(line.x) >= abs(last.x) && abs(line.y) != abs(last.y) then continue; else array_add(*vecs,line * points[i].weight);
+    }
+    
+
+
+    return vecs;
+}
 
 curvePoint2d :: struct {
     weight:float;
     pos:Vector2 = .{0,0};
+}
+curvePoint3d :: struct {
+    weight:float;
+    pos:Vector4 = .{0,0,0,0};
 }
 Resolution :: 250;
 
@@ -80,23 +125,13 @@ deboors :: (k: int, degree: int, i: int, x: float, knots: [] float, ctrlpoint: V
     }
 }
 
+deboors :: (k: int, degree: int, i: int, x: float, knots: [] float, ctrlpoint: Vector4) -> Vector4 {
 
-divide_line :: (a:Vector2,b:Vector2) {
-    step := a / Resolution;
-    dir := b - a;
-    stepdir := normalize(step * dir);
-}
-
-
-fill_knots :: (knots:*[] float) {
-    i := 0.0;
-
-    // for 0..knots.count - 1 {
-    //     knots[it] = i;
-    //     i += 1;
-    //     if it == 1 { knots[it] = xx 0; i = 1; };
-    // }
-    knots.* = .[0,0,0,0,1,1,1,1];
+    if k == 0 || i == knots.count - 1 || i + degree + 1 - k then return ctrlpoint;
+    else {
+    alpha := (x - knots[i]) / (knots[i + degree + 1 - k] - knots[i]);
+    return (deboors(k - 1, degree, i - 1, x, knots, ctrlpoint)) * (alpha) + deboors(k - 1, degree, i, x, knots, ctrlpoint) * alpha;
+    }
 }
 
 

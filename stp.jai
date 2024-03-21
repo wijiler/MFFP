@@ -1,5 +1,5 @@
 parse_ap214 :: (filename:string) -> ap214 {
-    curve := Curve2d(.{1,.{-4,-4}},.{1,.{-2,4}},.{1,.{2,-4}},.{1,.{4,4}});
+    curve := Curve2d(.[0,0,0,0,1,1,1,1],.{1,.{-4,-4,}},.{1,.{-2,4,}},.{1,.{2,-4,}},.{1,.{4,4,}});
     cstring:String_Builder;
     init_string_builder(*cstring);
     append(*cstring,"[");
